@@ -1,11 +1,10 @@
-const CACHE_NAME = "catch-thief-v2";
+const CACHE_NAME = "catch-thief-v3";
 
 const FILES = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./icon.svg"
 ];
 
 self.addEventListener("install", event => {
@@ -20,7 +19,7 @@ self.addEventListener("activate", event => {
     caches.keys().then(keys =>
       Promise.all(
         keys.filter(key => key !== CACHE_NAME)
-            .map(key => caches.delete(key))
+          .map(key => caches.delete(key))
       )
     )
   );
@@ -28,9 +27,11 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
-    caches.match(event.request).then(response =>
-      response || fetch(event.request)
+    caches.match(event.request).then(
+      response => response || fetch(event.request)
     )
   );
 });
