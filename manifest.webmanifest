@@ -1,1 +1,15 @@
-{"name":"Catch the Thief","short_name":"Catch Thief","start_url":"./index.html","display":"standalone","background_color":"#101827","theme_color":"#101827","icons":[]}
+
+
+{
+  "id": "./",
+  "name": "Catch the Thief",
+  "short_name": "Catch Thief",
+  "description": "Catch the Thief - Mobile Game",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101827",
+  "theme_color": "#101827",
+  "icons": []
+}
