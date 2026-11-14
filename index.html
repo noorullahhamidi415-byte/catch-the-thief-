@@ -1,13 +1,57 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#101827"><link rel="manifest" href="manifest.webmanifest"><title>Catch the Thief</title><style>*{box-sizing:border-box}body{margin:0;background:#101827;color:white;font-family:Arial;text-align:center}h2{margin:12px}.hud{display:flex;justify-content:space-around;padding:8px}canvas{display:block;width:100%;max-width:480px;height:62vh;margin:auto;background:#344054;touch-action:none}.controls{display:flex;justify-content:center;gap:18px;padding:12px}button{font-size:22px;padding:12px 25px;border:0;border-radius:12px;background:#2563eb;color:white}#msg{padding:4px}</style></head><body><h2>🚓 Catch the Thief</h2><div class="hud"><span>Score: <b id="score">0</b></span><span>Stage: <b id="stage">1</b></span></div><canvas id="game" width="400" height="600"></canvas><div id="msg">Catch the red car!</div><div class="controls"><button id="left">◀</button><button id="start">START / RESTART</button><button id="right">▶</button></div><script>
-const c=document.getElementById('game'),x=c.getContext('2d');let px=180,tx=180,py=490,ty=130,score=0,run=false,dir=0,traffic=[];const scoreEl=document.getElementById('score');function car(a,b,color){x.fillStyle=color;x.fillRect(a,b,40,72);x.fillStyle='#cbd5e1';x.fillRect(a+6,b+9,28,17);x.fillRect(a+6,b+47,28,14);x.fillStyle='#111827';x.fillRect(a-3,b+12,5,16);x.fillRect(a+38,b+12,5,16);x.fillRect(a-3,b+48,5,16);x.fillRect(a+38,b+48,5,16)}function draw(){x.fillStyle='#344054';x.fillRect(0,0,400,600);x.fillStyle='#202938';x.fillRect(35,0,330,600);x.strokeStyle='#f8fafc';x.setLineDash([28,24]);x.lineWidth=4;x.beginPath();x.moveTo(200,0);x.lineTo(200,600);x.stroke();x.setLineDash([]);car(tx,ty,'#dc2626');car(px,py,'#2563eb');if(run){tx+=Math.sin(Date.now()/500)*1.7;ty+=1.15;if(ty>600){ty=-80;score+=10;scoreEl.textContent=score;document.getElementById('stage').textContent=1+Math.floor(score/50)}px+=dir*4;px=Math.max(42,Math.min(318,px));if(Math.abs(px-tx)<35&&Math.abs(py-ty)<60){run=false;document.getElementById('msg').textContent='Caught! Score: '+score+' — press START to play again.'}}requestAnimationFrame(draw)}document.getElementById('left').onpointerdown=()=>dir=-1;document.getElementById('right').onpointerdown=()=>dir=1;for(const id of ['left','right'])document.getElementById(id).onpointerup=()=>dir=0;document.getElementById('start').onclick=()=>{px=180;tx=180;ty=100;score=0;scoreEl.textContent=0;run=true;document.getElementById('msg').textContent='Chase the red car!'};draw();
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101820">
+<meta name="description" content="Catch the Thief - Fun mobile chase game">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Catch the Thief</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101820;color:white;font-family:Arial;text-align:center}
+h2{color:#ffd700}
+canvas{background:#263238;border:3px solid white;border-radius:12px;width:95%;max-width:420px;touch-action:none}
+button{padding:14px 25px;margin:8px;border:0;border-radius:10px;background:#ffd700;font-size:18px;font-weight:bold}
+#info{font-size:20px;margin:10px}
+</style>
+</head>
+<body>
+<h2>🚓 CATCH THE THIEF 🚨</h2>
+<div id="info">Score: <span id="score">0</span></div>
+<canvas id="game" width="400" height="600"></canvas>
+<div>
+<button onclick="move(-1)">⬅️ LEFT</button>
+<button onclick="move(1)">RIGHT ➡️</button>
+</div>
+<button onclick="restart()">START / RESTART</button>
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker فعال شو:', reg.scope))
-      .catch(err => console.error(err));
-  });
+const c=document.getElementById("game"),ctx=c.getContext("2d");
+let player=175,thief=175,ty=50,score=0,speed=3,over=false;
+function drawCar(x,y,color,label){
+ctx.fillStyle=color;ctx.fillRect(x,y,50,85);
+ctx.fillStyle="white";ctx.fillRect(x+8,y+12,34,18);
+ctx.fillStyle="black";ctx.fillRect(x+5,y+65,10,12);ctx.fillRect(x+35,y+65,10,12);
+ctx.fillStyle="white";ctx.font="12px Arial";ctx.fillText(label,x+5,y+48);
 }
+function draw(){
+ctx.clearRect(0,0,400,600);
+ctx.strokeStyle="white";ctx.setLineDash([30,25]);ctx.lineWidth=4;
+ctx.beginPath();ctx.moveTo(200,0);ctx.lineTo(200,600);ctx.stroke();ctx.setLineDash([]);
+drawCar(player,490,"#2196f3","POLICE");
+drawCar(thief,ty,"#e53935","THIEF");
+if(!over){
+ty+=speed;
+if(ty>510){
+if(Math.abs(thief-player)<55){over=true;ctx.fillStyle="white";ctx.font="30px Arial";ctx.fillText("GAME OVER",100,300);}
+else{score++;document.getElementById("score").textContent=score;ty=-100;thief=Math.random()*340;speed=Math.min(8,speed+.2);}
+}
+requestAnimationFrame(draw);
+}
+}
+function move(d){player=Math.max(0,Math.min(350,player+d*45));}
+function restart(){player=175;thief=Math.random()*340;ty=50;score=0;speed=3;over=false;document.getElementById("score").textContent=0;draw();}
+draw();
 </script>
-</body></html>
+</body>
+</html>
